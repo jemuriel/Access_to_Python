@@ -10,8 +10,7 @@ def main() -> None:
 
     st.markdown(
         """
-        #TTP Optimisation Dashboard
-
+        # TTP Optimisation Dashboard
 
 
         #### 👈 Select a tab from the sidebar
