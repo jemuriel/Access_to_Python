@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # Load Data
-file_path = r"C:\Users\61432\OneDrive - Pacific National\Tactical_Train_Planning\DataFiles\Wagon_Balancing\Model_Files\MBM_corridor\7.1_wagon_plan_2025.csv"
+file_path = 'csv_files/7.1_wagon_plan_2025.csv'
 df = pd.read_csv(file_path)
 
 st.title("Wagon Plan")
