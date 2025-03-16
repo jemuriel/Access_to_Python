@@ -27,7 +27,7 @@ span[data-baseweb="tag"] {
 )
 
 # Load Data
-path = r"csv_files\filtered_long_train_services.csv"
+path = 'csv_files/filtered_long_train_services.csv'
 df = pd.read_csv(path)
 
 # Convert datetime
