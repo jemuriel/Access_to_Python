@@ -27,7 +27,7 @@ span[data-baseweb="tag"] {
 )
 
 # Load Data
-path = r"C:\Users\61432\OneDrive - Pacific National\Tactical_Train_Planning\DataFiles\Wagon_Balancing\filtered_long_train_services.csv"
+path = r"csv_files\filtered_long_train_services.csv"
 df = pd.read_csv(path)
 
 # Convert datetime
