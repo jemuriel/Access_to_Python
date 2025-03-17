@@ -8,6 +8,9 @@ def main() -> None:
     # app configs
     st.set_page_config(layout="wide")  # use all the available space
 
+    image_path = "Images/pacific-national.webp"
+    st.image(image_path, width=200)
+
     st.markdown(
         """
         # TTP Optimisation Dashboard
