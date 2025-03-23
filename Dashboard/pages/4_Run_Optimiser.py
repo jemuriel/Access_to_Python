@@ -1,16 +1,20 @@
 import os
 import sys
 
-# Add project root (Access_to_Python) to Python path
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+# 🔧 Fix path for Streamlit Cloud
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
+
+# ✅ NOW import local modules
+from Wagon_Planning.New_Time_Table_Run import NewTimeTable
+from Wagon_Planning.Wagon_Assigner import WagonAssigner
 
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from Wagon_Planning.New_Time_Table_Run import NewTimeTable
-from Wagon_Planning.Wagon_Assigner import WagonAssigner
+
 
 # Set page configuration
 st.set_page_config(page_title="Run Assignment", layout="wide")
