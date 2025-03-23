@@ -1,0 +1,77 @@
+UNIT,PLATFORM,NUM_PLATFORMS,FAMILY,WAGON_CLASS,SIZE,ALL_EQUAL,CONFIGURATION
+Tank Wagons,Tank Wagons,1,Tank Wagons,ATLF,0,,
+Tank Wagons,Tank Wagons,1,Tank Wagons,ATLY,0,,
+Tank Wagons,Tank Wagons,1,Tank Wagons,ATMF,0,,
+Tank Wagons,Tank Wagons,1,Tank Wagons,ATPF,0,,
+Tank Wagons,Tank Wagons,1,Tank Wagons,ATQF,0,,
+Crew Cars,Crew Cars,1,Crew Cars,BRS,0,,
+Intermodal,48ft Wells,2,48ft 2-Pack Wells,CQWY,48,YES,48-48
+Steel,Steel,1,STL - Transibase,NQTY,0,,
+Tank Wagons,Tank Wagons,1,Tank Wagons,NTAY,0,,
+Tank Wagons,Tank Wagons,1,Tank Wagons,NTBF,0,,
+Intermodal,Single Flats,1,63ft Single,PQAY,63,YES,63
+Riverina,Riverina,1,80ft Single,PQZY,80,,
+Steel,Steel,1,STL - Rod in Coil,PRRY,0,,
+Intermodal,48ft Skels,5,48ft 5-Pack Skels,PRXY,48,YES,48-48-48-48-48
+Tank Wagons,Tank Wagons,1,Tank Wagons,PTLY,0,,
+Intermodal,48ft Skels,5,48ft 5-Pack Skels,QQCY,48,YES,48-48-48-48-48
+Intermodal,48ft Skels,5,48ft 5-Pack Skels,QQDY,48,YES,48-48-48-48-48
+Steel,Steel,1,STL - Conti,RCAY,0,,
+Steel,Steel,1,STL - Conti,RCJY,0,,
+Steel,Steel,1,STL - Rod in Coil,RCOF,0,,
+Steel,Steel,1,STL - Rail Pair,RKAF,0,,
+Steel,Steel,1,STL - Rail Pair,RKAX,0,,
+Steel,Steel,1,STL - Billet,RKAY,0,,
+Steel,Steel,1,STL - Merchant Bar,RKBY,0,,
+Steel,Steel,1,STL - Merchant Bar,RKCY,0,,
+Steel,Steel,1,STL - Structural,RKDY,0,,
+Steel,Steel,1,STL - Billet,RKEX,0,,
+Steel,Steel,1,STL - Merchant Bar,RKEY,0,,
+Steel,Steel,1,STL - Structural,RKFX,0,,
+Steel,Steel,1,STL - Billet,RKGY,0,,
+Riverina,Riverina,1,48ft Single Wells,RKIY,48,,
+Steel,Steel,1,STL - Billet,RKKY,0,,
+Steel,Steel,1,STL - Rail Pair,RKLF,0,,
+Steel,Steel,1,STL - Transibase,RKLY,0,,
+Steel,Steel,1,STL - Structural,RKNF,0,,
+Steel,Steel,1,STL - Structural,RKOX,0,,
+Steel,Steel,1,STL - Conti,RKQF,0,,
+Steel,Steel,1,STL - Rail Pair,RKRF,0,,
+Steel,Steel,1,STL - Structural,RKWY,0,,
+Cars Carriers,Cars Carriers,1,Cars Carriers,RMEY,0,,
+Cars Carriers,Cars Carriers,1,Cars Carriers,RMOY,0,,
+Steel,Steel,1,STL - Structural,ROKX,0,,
+Steel,Steel,1,STL - Structural,ROOX,0,,
+Riverina,Riverina,1,63ft Single,RQAY,63,,
+Intermodal,Single Flats,1,80ft Single,RQDW,80,YES,80
+Intermodal,Single Flats,1,63ft Single,RQGY,63,YES,63
+Intermodal,Single Flats,1,63ft Single,RQHY,63,YES,63
+Intermodal,Single Flats,1,80ft Single,RQJW,80,YES,80
+Intermodal,40ft mixed,5,40ft 5-Pack Skels/Well,RQLY,40,YES,40-40-40-40-40-
+Intermodal,Single Flats,1,80ft Single,RQPW,80,YES,80
+Intermodal,48ft Skels,5,48ft 5-Pack Skels,RQQY,48,YES,48-48-48-48-48
+Steel,Steel,1,STL - Rod in Coil,RQRY,0,,
+Intermodal,Single Flats,1,63ft Single,RQTY,63,YES,63
+Intermodal,Single Flats,1,80ft Single,RQWW,80,YES,80
+Intermodal,48ft Wells,5,48ft 5-Pack Wells,RQZY,48,YES,48-48-48-48-48
+Intermodal,48ft Skels,5,48ft/40ft 5-Pack Skels,RRAY,48,NO,40-48-48-48-40
+Intermodal,40ft Wells,5,40ft 5-Pack Wells,RRCY,40,YES,40-40-40-40-40
+Intermodal,Single Flats,1,63ft Single,RRDY,63,YES,63
+Riverina,Riverina,1,63ft Single,RREY,63,,
+Intermodal,48ft Skels,5,48ft/40ft 5-Pack Skels,RRGY,48,YES,48-48-48-48-48
+Intermodal,48ft Skels,5,48ft 5-Pack Skels,RRHY,48,YES,48-48-48-48-48
+Intermodal,48ft Wells,1,48ft Single Wells,RRIY,48,YES,48
+Intermodal,Single Flats,1,63ft Single,RRKY,63,YES,63
+Intermodal,48ft Skels,5,48ft 5-Pack Skels,RRQY,48,YES,48-48-48-48-48
+Intermodal,48ft Wells,5,48ft 5-Pack Wells,RRRY,48,YES,48-48-48-48-48
+Intermodal,Single Flats,1,63ft Single,RRTY,63,YES,63
+Riverina,Riverina,1,40ft Single Wells,RRWY,40,,
+Intermodal,40ft Wells,5,40ft 5-Pack Wells,RRXY,40,YES,40-40-40-40-40
+Intermodal,48ft Skels,5,53ft 5-Pack Skels,RRYY,53,YES,53-53-53-53-53
+Intermodal,48ft Wells,5,48ft 5-Pack Wells,RRZY,48,YES,48-48-48-48-48
+Tank Wagons,Tank Wagons,1,Tank Wagons,RTHY,0,,
+Crew Cars,Crew Cars,1,Crew Cars,RZAY,0,,
+Crew Cars,Crew Cars,1,Crew Cars,RZBY,0,,
+Crew Cars,Crew Cars,1,Crew Cars,RZDY,0,,
+Crew Cars,Crew Cars,1,Crew Cars,RZEY,0,,
+Steel,Steel,1,STL - Structural,VOFX,0,,
