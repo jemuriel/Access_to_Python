@@ -36,9 +36,9 @@ wagon_assignments = "11.1_wagon_assignments_MBM.csv"
 disag_forecast = pd.read_csv(disag_forecast_file)
 
 # Sidebar parameters
-st.sidebar.header("⚙️ Model Parameters")
-plan_days = st.sidebar.slider("Planning Horizon (Days)", min_value=7, max_value=90, value=30)
-verbose_mode = st.sidebar.selectbox("Verbose Output", options=[0, 1], index=1)
+# st.sidebar.header("⚙️ Model Parameters")
+# plan_days = st.sidebar.slider("Planning Horizon (Days)", min_value=7, max_value=90, value=30)
+# verbose_mode = st.sidebar.selectbox("Verbose Output", options=[0, 1], index=1)
 
 # Force use of default file even if a modified version exists
 use_default_checkbox = st.sidebar.checkbox("✅ Force use of default wagon plan file", value=False)
