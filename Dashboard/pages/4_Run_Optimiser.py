@@ -37,7 +37,7 @@ disag_forecast = pd.read_csv(disag_forecast_file)
 
 # Sidebar parameters
 # st.sidebar.header("⚙️ Model Parameters")
-# plan_days = st.sidebar.slider("Planning Horizon (Days)", min_value=7, max_value=90, value=30)
+plan_days = st.sidebar.slider("Planning Horizon (Days)", min_value=7, max_value=90, value=30)
 # verbose_mode = st.sidebar.selectbox("Verbose Output", options=[0, 1], index=1)
 
 # Force use of default file even if a modified version exists
@@ -67,8 +67,8 @@ if st.button("Run Yearly Assignment Model"):
     temp_wagon_path = "temp_wagon_plan.csv"
     wagon_plan_df.to_csv(temp_wagon_path, index=False)
 
-    train_timetable = NewTimeTable(plan_days, timetable_file, temp_wagon_path, wagon_mapping,
-                                   inventory_output, adjustments_output, wagon_output, verbose_mode)
+    train_timetable = NewTimeTable(30, timetable_file, temp_wagon_path, wagon_mapping,
+                                   inventory_output, adjustments_output, wagon_output, 1)
 
     WagonAssigner.run_yearly_assignment(disag_forecast, train_timetable,
                                         train_summary, wagon_assignments, unassigned_boxes)
