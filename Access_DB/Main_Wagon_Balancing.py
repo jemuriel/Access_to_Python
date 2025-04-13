@@ -2,27 +2,31 @@ import os
 
 import pandas as pd
 
+from Forecast_Disag.Improved_Prob_Model import Probabilistic_Model
 from Wagon_Planning.New_Time_Table_Run import NewTimeTable
 from Wagon_Planning.Wagon_Assigner import WagonAssigner
 
 
-os.chdir(r"C:\Users\61432\OneDrive - Pacific National\Tactical_Train_Planning\DataFiles\Wagon_Balancing"
-         r"\Model_Files\MBM_Corridor")
+# os.chdir(r"C:\Users\61432\OneDrive - Pacific National\Tactical_Train_Planning\DataFiles\Wagon_Balancing"
+#          r"\Model_Files\MBM_Corridor")
 # -----------------------------------------------------------------------------------------------------------------
 # FORECAST FILES
 # -----------------------------------------------------------------------------------------------------------------
-data_file = "C:\\Users\\61432\\OneDrive - Pacific National\\Tactical_Train_Planning\\DataFiles\\OutboundFile_No8.csv"
-forecast_file = "C:\\Users\\61432\\OneDrive - Pacific National\\Tactical_Train_Planning\\DataFiles\\PN_Forecast.csv"
-output_forecast = r"5_disag_forecasted_flows_MBM.csv"
-box_file = "C:\\Users\\61432\\OneDrive - Pacific National\\Tactical_Train_Planning\\DataFiles\\box_types.csv"
+data_file = pd.read_csv('../csv_files/outboundFile_No8.csv')
+# forecast_file = pd.read_csv('../csv_files/4_PN_Forecast.csv')
+forecast_file = pd.read_csv(r"C:\Users\61432\Downloads\forecast_versions_rows.csv")
+
+output_forecast = (r"C:\Users\61432\OneDrive - Pacific National\Tactical_Train_Planning\DataFiles\Wagon_Balancing"
+                   r"\Model_Files\MBM_Corridor\5_disag_forecasted_flows_MBM_new.csv")
+box_file = pd.read_csv('../csv_files/box_types.csv')
 
 # Process the files and calculate the weights probabilistically
-# print('Starting Probabilistic Model')
-# new_model = Probabilistic_Model(data_file, forecast_file, box_file, output_forecast)
-# disag_forecast = new_model.run_complete_model()
+print('Starting Probabilistic Model')
+new_model = Probabilistic_Model(data_file, forecast_file, box_file, output_forecast)
+disag_forecast = new_model.run_complete_model()
 
 # Read from csv temporarily
-disag_forecast = pd.read_csv("5_disag_forecasted_flows_MBM.csv")
+# disag_forecast = pd.read_csv("5_disag_forecasted_flows_MBM.csv")
 
 # -----------------------------------------------------------------------------------------------------------------
 # WAGON BALANCING FILES

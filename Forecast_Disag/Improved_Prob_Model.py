@@ -8,14 +8,13 @@ from Access_DB.ConnectDB import ReadAccessDB
 
 class Probabilistic_Model:
     def __init__(self, historical_file, forecast_file, box_types_file, output_file):
-        self.initial_forecast_df = pd.read_csv(forecast_file)
-        self.aggregated_forecast = None
-
-        self.history_df = pd.read_csv(historical_file)
-        self.history_df_teus = None
-
-        self.box_types = pd.read_csv(box_types_file)
+        self.history_df = historical_file
+        self.initial_forecast_df = forecast_file
+        self.box_types = box_types_file
         self.output_file = output_file
+
+        self.aggregated_forecast = None
+        self.history_df_teus = None
 
         # self.train_data = self._process_access_db()
 
@@ -76,7 +75,8 @@ class Probabilistic_Model:
         corridor_train_subtotals = corridor_train_subtotals.merge(self.initial_forecast_df, on=['OD_PAIR', 'MONTH'],
                                                                   how='left')
 
-        corridor_train_subtotals['NEW_FORECAST'] = (corridor_train_subtotals['FORECASTED_VALUE'] *
+        # MAJOR CHANGE 'FORECASTED_VALUE' FOR 'NUM_BOXES'
+        corridor_train_subtotals['NEW_FORECAST'] = (corridor_train_subtotals['NUM_BOXES'] *
                                                     corridor_train_subtotals['TRAIN_WEIGHT'])
 
         corridor_train_subtotals = corridor_train_subtotals.groupby(['TRAIN_NUM', 'MONTH', 'OD_PAIR']).agg(
@@ -155,7 +155,7 @@ class Probabilistic_Model:
         self.history_df = (self.history_df.groupby(['TRAIN_NUM', 'DATE', 'MONTH', 'WEEK', 'BOX_TYPE', 'OD_PAIR'])
                            .agg(SUBTOTAL_BOX=('NUM_TEUS', 'size'), SUBTOTAL_TEUS=('NUM_TEUS', 'sum')).reset_index())
 
-        self.history_df.to_csv('3_historical_data_MBM_Transformed.csv', index=False)
+        # self.history_df.to_csv('3_historical_data_MBM_Transformed.csv', index=False)
 
     def filter_historical_data(self):
         # Filter trains that are in the forecast
@@ -430,7 +430,7 @@ class Probabilistic_Model:
             disag_forecast.drop(['REMAINDER_PROBABILITY', 'MAX_WEEK', 'TOTAL_WEEK_WEIGHT'], axis=1,
                                 inplace=True)
 
-            disag_forecast.to_csv(self.output_file, index=False)
+            # disag_forecast.to_csv(self.output_file, index=False)
 
             return disag_forecast
 

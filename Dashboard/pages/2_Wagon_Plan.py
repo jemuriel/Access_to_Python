@@ -2,20 +2,46 @@ import streamlit as st
 import pandas as pd
 from fpdf import FPDF
 import tempfile
+import os
 
-# Load Data
-file_path = 'csv_files/7.1_wagon_plan_2025.csv'
-df = pd.read_csv(file_path)
 
+st.set_page_config(layout="wide")
 st.title("Wagon Plan Editor")
 
-# Sidebar Filters
-st.sidebar.header("🔍 Filters")
+# # Session state initialization
+# if 'wagon_plan_df' not in st.session_state:
+#     st.session_state.wagon_plan_df = pd.read_csv('csv_files/7.1_wagon_plan_2025.csv')
+#
+# # Upload new wagon plan file
+# uploaded_file = st.file_uploader("Upload New Wagon Plan (CSV)", type="csv")
+# if uploaded_file:
+#     st.session_state.wagon_plan_df = pd.read_csv(uploaded_file)
+#     st.success("New wagon plan uploaded and loaded for current session.")
 
-# Filter by Train Name
-train_options = df['TRAIN_NAME'].unique()
-selected_trains = st.sidebar.multiselect("Select Train Name(s):", options=train_options, default=train_options)
-filtered_df = df[df['TRAIN_NAME'].isin(selected_trains)]
+uploaded_file = st.file_uploader("Upload New Wagon Plan (CSV)", type="csv")
+
+if uploaded_file:
+    try:
+        df_uploaded = pd.read_csv(uploaded_file)
+        required_cols = {'TRAIN_NAME', 'WAGON_CLASS', 'NUM_WAGONS'}
+        if not required_cols.issubset(df_uploaded.columns):
+            raise ValueError("Uploaded file is missing required columns.")
+        st.session_state.wagon_plan_df = df_uploaded
+        st.success("New wagon plan uploaded and loaded for current session.")
+    except Exception as e:
+        st.error(f"Failed to load CSV: {e}")
+elif 'wagon_plan_df' not in st.session_state:
+    st.session_state.wagon_plan_df = pd.read_csv('csv_files/7.1_wagon_plan_2025.csv')
+
+
+# Origin filter at the top
+st.header("🚉 Filter by Origin")
+origin_options = st.session_state.wagon_plan_df['ORIGIN'].unique()
+selected_origin = st.selectbox("Select Origin:", options=origin_options)
+
+# Filter based on selected origin
+df = st.session_state.wagon_plan_df
+filtered_df = df[df['ORIGIN'] == selected_origin]
 
 # Editable Data Section
 st.subheader("✏️ Editable Wagon Plan")
@@ -28,7 +54,7 @@ st.session_state["modified_wagon_plan"] = editable_df.copy()
 st.success("Modified wagon plan is now stored in memory and ready for assignment run.")
 
 # Detailed Train-wise Display
-st.subheader("🚉 Detailed Train-wise Wagon Plan")
+st.subheader("🚂 Detailed Train-wise Wagon Plan")
 with st.expander("View Detailed Wagon Plan", expanded=True):
     scroll_container = st.container()
     for train in editable_df['TRAIN_NAME'].unique():
@@ -50,13 +76,14 @@ with st.expander("View Detailed Wagon Plan", expanded=True):
 # Wagon Class Summary Table
 st.subheader("🚩 Wagon Class Summary")
 wagon_classes = df['WAGON_CLASS'].unique()
-selected_classes = st.sidebar.multiselect("Select Wagon Class(es):", options=wagon_classes, default=wagon_classes)
-class_filtered_df = editable_df[editable_df['WAGON_CLASS'].isin(selected_classes)]
+# selected_classes = st.multiselect("Select Wagon Class(es):", options=wagon_classes, default=wagon_classes)
+# class_filtered_df = editable_df[editable_df['WAGON_CLASS'].isin(selected_classes)]
 
-summary = class_filtered_df.groupby(['WAGON_CLASS']).agg({'NUM_WAGONS': 'sum'}).reset_index()
+# summary = class_filtered_df.groupby(['WAGON_CLASS']).agg({'NUM_WAGONS': 'sum'}).reset_index()
+summary = editable_df.groupby(['WAGON_CLASS']).agg({'NUM_WAGONS': 'sum'}).reset_index()
 st.dataframe(summary, use_container_width=True)
 
-# Optional CSV Export (still useful for local backup)
+# Optional CSV Export
 st.subheader("📥 Download Modified Wagon Plan")
 modified_csv = editable_df.to_csv(index=False).encode('utf-8')
 st.download_button(
@@ -121,3 +148,19 @@ with open(temp_pdf.name, "rb") as f:
         file_name="wagon_plan.pdf",
         mime="application/pdf"
     )
+
+# Overwrite Button with confirmation dialog
+st.subheader("⚠️ Overwrite Original Wagon Plan File")
+
+confirm_overwrite = st.checkbox("I understand that this will permanently overwrite the saved wagon plan file.")
+
+if confirm_overwrite:
+    if st.button("Overwrite Saved Wagon Plan"):
+        try:
+            st.session_state["modified_wagon_plan"].to_csv('csv_files/7.1_wagon_plan_2025.csv', index=False)
+            st.success("Wagon plan successfully overwritten.")
+        except Exception as e:
+            st.error(f"Error saving file: {e}")
+else:
+    st.info("Check the box above to confirm overwriting the original file.")
+
