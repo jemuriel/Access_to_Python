@@ -188,9 +188,14 @@ if st.session_state.get("selected_forecast_version") != selected_version_label:
     st.session_state.pop("modified_forecast_df", None)
 
 # --- Run Disaggregation Model -----------------------------------------------------------------------------------
+@st.cache_data(show_spinner="Loading historical data...")
+def get_historical_data():
+    return fetch_table("historical_data")
+
 @st.cache_data(show_spinner=False)
 def run_disaggregation_model(version_df, label):
-    historical_df = pd.read_csv('csv_files/outboundFile_No8.csv')
+    # historical_df = get_historical_data()
+    historical_df = pd.read_csv('csv_files/historical_data.csv')
     box_types_df = pd.read_csv('csv_files/box_types.csv')
 
     model = Probabilistic_Model(
@@ -233,7 +238,7 @@ if st.button("Run Disaggregation Model"):
     box_opts = sorted(result_df["BOX_TYPE"].dropna().unique())
 
     dr = st.sidebar.date_input("Date Range", [result_df["DATE"].min(), result_df["DATE"].max()])
-    od_sel = st.sidebar.multiselect("OD Pair", od_opts, default=['AFT-BFT', 'BFT-AFT', 'MFT-BFT', 'MFT-SFT'])
+    od_sel = st.sidebar.multiselect("OD Pair", od_opts, default=['AFT-BFT', 'BFT-AFT', 'MFT-BFT'])
     train_sel = st.sidebar.multiselect("Train Number", train_opts, default=train_opts)
     box_sel = st.sidebar.multiselect("Box Type", box_opts, default=box_opts)
 
