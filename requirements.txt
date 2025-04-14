@@ -4,5 +4,4 @@ numpy
 plotly
 fpdf
 matplotlib
-random
 datetime
