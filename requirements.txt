@@ -5,3 +5,4 @@ plotly
 fpdf
 matplotlib
 datetime
+requests
