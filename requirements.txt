@@ -6,3 +6,5 @@ fpdf
 matplotlib
 datetime
 requests
+Access_DB
+pyodbc
