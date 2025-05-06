@@ -110,14 +110,22 @@ edited_df = st.data_editor(
 # col_delete, col_update = st.columns([1, 1])
 # with col_delete:
 if st.button("🗑️ Delete All Modified Forecasts", key="delete_modified_forecasts_button"):
-    url = f"{SUPABASE_URL}/rest/v1/forecast_versions?version_label=neq.null"
-    res = requests.delete(url, headers={**HEADERS, "Prefer": "return=representation"})
-    if res.status_code in [200, 204]:
+    # Delete from forecast_versions
+    url_versions = f"{SUPABASE_URL}/rest/v1/forecast_versions?version_label=neq.null"
+    res_versions = requests.delete(url_versions, headers={**HEADERS, "Prefer": "return=representation"})
+
+    # Delete from disag_forecast
+    url_disag = f"{SUPABASE_URL}/rest/v1/disag_forecast?version_label=neq.null"
+    res_disag = requests.delete(url_disag, headers={**HEADERS, "Prefer": "return=representation"})
+
+    if res_versions.status_code in [200, 204] and res_disag.status_code in [200, 204]:
         st.session_state.pop("modified_forecast_df", None)
-        st.markdown("<p style='color: green; font-size: 0.85rem;'>✅ Modified versions deleted.</p>", unsafe_allow_html=True)
+        st.markdown("<p style='color: green; font-size: 0.85rem;'>✅ Modified forecasts and disaggregated forecasts deleted.</p>", unsafe_allow_html=True)
     else:
-        st.error(f"Failed to delete modified forecasts: {res.status_code}")
-        st.text(res.text)
+        st.error(f"Failed to delete forecasts. Forecast versions status: {res_versions.status_code}, Disag forecasts status: {res_disag.status_code}")
+        st.text(f"Forecast versions response: {res_versions.text}")
+        st.text(f"Disag forecasts response: {res_disag.text}")
+
 
 # with col_update:
 st.write("")
@@ -220,16 +228,28 @@ def run_disaggregation_model(version_df, label):
 
 st.subheader("▶️ Run Disaggregation Model")
 if st.button("Run Disaggregation Model"):
-    version_df = combined_forecast[combined_forecast["version_label"] == selected_version_label].copy()
-    if version_df.empty:
-        st.warning("Selected version not found. Defaulting to the first available.")
-        version_df = combined_forecast[combined_forecast["version_label"] == default_version_label].copy()
+    # Step 1: Check if disag_forecast already has this version
+    url_check = f"{SUPABASE_URL}/rest/v1/disag_forecast?select=*&version_label=eq.{selected_version_label}"
+    res_check = requests.get(url_check, headers=HEADERS)
+    res_check.raise_for_status()
+    existing_records = res_check.json()
 
-    st.info(f"Running disaggregation model for forecast version: {selected_version_label}")
-    result_df, version_table = run_disaggregation_model(version_df, selected_version_label)
-    st.success(f"Results saved to: {version_table}")
+    if existing_records:
+        # --- If existing, load it directly
+        st.success(f"✅ Found existing disaggregated forecast for version: {selected_version_label}")
+        result_df = pd.DataFrame(existing_records)
+    else:
+        # --- If not existing, run the disaggregation model
+        version_df = combined_forecast[combined_forecast["version_label"] == selected_version_label].copy()
+        if version_df.empty:
+            st.warning("Selected version not found. Defaulting to the first available.")
+            version_df = combined_forecast[combined_forecast["version_label"] == default_version_label].copy()
 
-    # --- Download Button ---
+        st.info(f"Running disaggregation model for forecast version: {selected_version_label}")
+        result_df, version_table = run_disaggregation_model(version_df, selected_version_label)
+        st.success(f"✅ Disaggregated forecast generated and saved: {version_table}")
+
+    # --- Proceed to visualization either way ---
     csv_buffer = io.StringIO()
     result_df.to_csv(csv_buffer, index=False)
     st.download_button("📥 Download Disaggregated Forecast", csv_buffer.getvalue().encode(), "Disaggregated_forecast.csv")
@@ -276,6 +296,7 @@ if st.button("Run Disaggregation Model"):
         df_filtered.groupby(["DATE", "BOX_TYPE"], as_index=False).sum(),
         x="DATE", y="NUM_BOXES", color="BOX_TYPE", markers=True),
         use_container_width=True)
+
 
 
 
