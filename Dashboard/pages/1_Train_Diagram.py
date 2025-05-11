@@ -64,6 +64,10 @@ def delete_versions(table_name):
     res.raise_for_status()
     return res.status_code in [200, 204]
 
+def apply_version_selection_preference(key="compare_version"):
+    if "next_version_to_select" in st.session_state:
+        st.session_state[key] = st.session_state.pop("next_version_to_select")
+
 def plot_train_diagram(df, title="Train Time-Distance Diagram"):
     df['ARR_TIME'] = pd.to_datetime(df['ARR_TIME'], errors='coerce')
     df['DEP_TIME'] = pd.to_datetime(df['DEP_TIME'], errors='coerce')
@@ -148,7 +152,9 @@ if st.button("💾 Save Modified Version"):
 
     try:
         upload_table(updated_df, "train_timetable_versions")
+        st.session_state.next_version_to_select = version_label
         st.success(f"Saved new version: {version_label}")
+        st.rerun()
     except Exception as e:
         st.error(f"Upload failed: {e}")
 
@@ -285,8 +291,8 @@ fig.update_layout(
             f'<span style="font-size:{emphasis_labels.get(label,14)}px">{label}</span>' for label in stations_sorted
         ]
     ),
-    height=1000,
-    width=2000,
+    height=800,
+    width=1200,
     xaxis=dict(tickformat="%a %H:%M")
 )
 
@@ -296,8 +302,16 @@ st.plotly_chart(fig, use_container_width=False)
 # --- 📊 Compare a Version Against Current ---
 st.subheader("📊 Compare Another Version to Current")
 
+apply_version_selection_preference("compare_version")
+
 # compare_version = st.selectbox("Select a Version to Compare", [v for v in version_options if v != selected_version], key="compare_version")
-compare_version = st.selectbox("Select a Version to Compare", version_options, key="compare_version")
+compare_version = st.selectbox(
+    "Select a Version to Compare",
+    version_options,
+    index=version_options.index(st.session_state.get("compare_version", "Original")),
+    key="compare_version"
+)
+
 df_compare = all_versions[all_versions["version_label"] == compare_version].copy()
 
 # Ensure ARR_TIME and DEP_TIME are parsed as datetime
@@ -392,8 +406,8 @@ fig_compare.update_layout(
             f'<span style="font-size:{emphasis_labels.get(label,14)}px">{label}</span>' for label in stations_sorted
         ]
     ),
-    height=1000,
-    width=2000,
+    height=800,
+    width=1200,
     xaxis=dict(tickformat="%a %H:%M")
 )
 
