@@ -115,7 +115,8 @@ selected_version_label = st.sidebar.selectbox(
 )
 
 # Filter selected version
-current_plan_df = all_wagon_plans[all_wagon_plans["version_label"].fillna("Original") == st.session_state.selected_version_label]
+current_plan_df = all_wagon_plans[all_wagon_plans["version_label"].fillna("Original") ==
+                                  st.session_state.selected_version_label]
 
 # Upload New Wagon Plan
 uploaded_file = st.file_uploader("Upload New Wagon Plan (CSV)", type="csv")

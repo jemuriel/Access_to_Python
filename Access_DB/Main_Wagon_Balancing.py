@@ -6,24 +6,23 @@ from Forecast_Disag.Improved_Prob_Model import Probabilistic_Model
 from Wagon_Planning.New_Time_Table_Run import NewTimeTable
 from Wagon_Planning.Wagon_Assigner import WagonAssigner
 
-
-# os.chdir(r"C:\Users\61432\OneDrive - Pacific National\Tactical_Train_Planning\DataFiles\Wagon_Balancing"
-#          r"\Model_Files\MBM_Corridor")
+os.chdir(r"C:\Users\61432\OneDrive - Pacific National\Tactical_Train_Planning\DataFiles\Wagon_Balancing"
+         r"\Model_Files\MBM_corridor")
 # -----------------------------------------------------------------------------------------------------------------
 # FORECAST FILES
 # -----------------------------------------------------------------------------------------------------------------
-data_file = pd.read_csv('../csv_files/outboundFile_No8.csv')
+data_file = pd.read_csv(r"C:\Users\61432\OneDrive - Pacific National\Tactical_Train_Planning\DataFiles\outboundFile_No8.csv")
 # forecast_file = pd.read_csv('../csv_files/4_PN_Forecast.csv')
 forecast_file = pd.read_csv(r"C:\Users\61432\Downloads\forecast_versions_rows.csv")
 
 output_forecast = (r"C:\Users\61432\OneDrive - Pacific National\Tactical_Train_Planning\DataFiles\Wagon_Balancing"
                    r"\Model_Files\MBM_Corridor\5_disag_forecasted_flows_MBM_new.csv")
-box_file = pd.read_csv('../csv_files/box_types.csv')
+box_file = pd.read_csv(r"C:\Users\61432\OneDrive - Pacific National\Tactical_Train_Planning\DataFiles\box_types.csv")
 
 # Process the files and calculate the weights probabilistically
 print('Starting Probabilistic Model')
-new_model = Probabilistic_Model(data_file, forecast_file, box_file, output_forecast)
-disag_forecast = new_model.run_complete_model()
+# new_model = Probabilistic_Model(data_file, forecast_file, box_file, output_forecast)
+# disag_forecast = new_model.run_complete_model()
 
 # Read from csv temporarily
 # disag_forecast = pd.read_csv("5_disag_forecasted_flows_MBM.csv")
@@ -31,27 +30,31 @@ disag_forecast = new_model.run_complete_model()
 # -----------------------------------------------------------------------------------------------------------------
 # WAGON BALANCING FILES
 # -----------------------------------------------------------------------------------------------------------------
-inventory_output = "inventory_levels.csv"
-adjustments_output = "inventory_adjustments.csv"
-wagon_output = '9_wagon_config_transformed_MBM.csv'
+inventory_output = (r"C:\Users\61432\OneDrive - Pacific National\Tactical_Train_Planning\DataFiles\Wagon_Balancing"
+                    r"\Model_Files\wagon_balancing\inventory_levels.csv")
+adjustments_output = (r"C:\Users\61432\OneDrive - Pacific National\Tactical_Train_Planning\DataFiles\Wagon_Balancing"
+                      r"\Model_Files\wagon_balancing\inventory_adjustments.csv")
+wagon_output = (r"C:\Users\61432\OneDrive - Pacific National\Tactical_Train_Planning\DataFiles\Wagon_Balancing"
+                r"\Model_Files\wagon_balancing\9_wagon_config_transformed_MBM.csv")
 
 timetable_file = "6_train_services.csv"
 
 # ===========================================================================
 # wagon_plan_file = "7_wagon_plan.csv"
-wagon_plan_file = "7.1_wagon_plan_2025.csv"
-#============================================================================
+wagon_plan = pd.read_csv("7.1_wagon_plan_2025.csv")
+# ============================================================================
 
 wagon_mapping = "8_wagon_mapping.csv"
 
-train_timetable = NewTimeTable(30, timetable_file, wagon_plan_file, wagon_mapping, inventory_output,
-                               adjustments_output, wagon_output, 1)
-# train_timetable.run_one_timetable()
+train_timetable = NewTimeTable(30, timetable_file, wagon_plan, wagon_mapping)
+inventory_levels, inventory_adjustments = train_timetable.balance_inventory()
+
+inventory_levels.to_csv(inventory_output, index=False)
+
+print()
 
 # UI interface ---------------------------------------------
 
-
-# ---------------------------------------------------------
 
 # -----------------------------------------------------------------------------------------------------------------
 # EVALUATE EFFICIENCY FOR EVERY TRAIN SERVICE
@@ -60,6 +63,7 @@ train_summary = '10_train_summary_MBM.csv'
 unassigned_boxes = '11_unassigned_containers_MBM.csv'
 wagon_assignments = '11.1_wagon_assignments_MBM.csv'
 WagonAssigner.run_yearly_assignment(disag_forecast, train_timetable, train_summary, wagon_assignments, unassigned_boxes)
+
 
 # -----------------------------------------------------------------------------------------------------------------
 # COMPARE TRAIN LEGS
@@ -113,6 +117,7 @@ def compare_forecast_legs():
     train_pd = pd.DataFrame(train_data)
     train_pd.to_csv('13_Forecast_leg_comparison_MBM.csv', index=False)
 
+
 def matching_train_services():
     # Safely create 'ORIGIN' and 'DESTINATION' columns
     filtered_forecast = disag_forecast[['TRAIN_NUM', 'OD_PAIR']].drop_duplicates()
@@ -151,6 +156,7 @@ def matching_train_services():
     # Create a DataFrame from the collected train data and write to CSV
     train_pd = pd.DataFrame(train_data)
     train_pd.to_csv('14_matching_trains_MBM.csv', index=False)
+
 
 def access_comparisson():
     # Safely create 'ORIGIN' and 'DESTINATION' columns

@@ -20,11 +20,15 @@ from Wagon_Planning.Time_Table_Run import TimeTable
 # -----------------------------------------------------------------------------------------------------------------
 # WAGON BALANCING MODEL
 # -----------------------------------------------------------------------------------------------------------------
-inventory_output = "C:\\Users\\61432\\OneDrive - Pacific National\\Tactical_Train_Planning\\DataFiles\\Wagon_Balancing\\inventory_levels.csv"
-adjustments_output = "C:\\Users\\61432\\OneDrive - Pacific National\\Tactical_Train_Planning\\DataFiles\\Wagon_Balancing\\inventory_adjustments.csv"
+inventory_output = ("C:\\Users\\61432\\OneDrive - Pacific National\\Tactical_Train_Planning\\"
+                    "DataFiles\\Wagon_Balancing\\inventory_levels.csv")
+adjustments_output = ("C:\\Users\\61432\\OneDrive - Pacific National\\Tactical_Train_Planning\\"
+                      "DataFiles\\Wagon_Balancing\\inventory_adjustments.csv")
 
-timetable_file = "C:\\Users\\61432\\OneDrive - Pacific National\\Tactical_Train_Planning\\DataFiles\\Wagon_Balancing\\train_services.csv"
-wagon_plan_file = "C:\\Users\\61432\\OneDrive - Pacific National\\Tactical_Train_Planning\\DataFiles\\Wagon_Balancing\\wagon_plan.csv"
+timetable_file = ("C:\\Users\\61432\\OneDrive - Pacific National\\Tactical_Train_Planning\\DataFiles\\"
+                  "Wagon_Balancing\\train_services.csv")
+wagon_plan_file = ("C:\\Users\\61432\\OneDrive - Pacific National\\Tactical_Train_Planning\\DataFiles\\"
+                   "Wagon_Balancing\\wagon_plan.csv")
 
 access_db = r"C:\Users\61432\OneDrive - Pacific National\Tactical_Train_Planning\Sample Train Plan.accdb"
 
