@@ -277,7 +277,7 @@ if 'train_buffer' not in st.session_state:
     st.session_state['train_buffer'] = 30  # default
 
 # Temporary slider input (does not auto-update session state)
-buffer_input = st.sidebar.slider("Train transit buffer", 30, 120, st.session_state['train_buffer'], step=30)
+buffer_input = st.sidebar.slider("Train transit buffer (6 to 12 hours)", 60, 720, st.session_state['train_buffer'], step=30)
 
 # Run optimiser only when button is clicked
 if st.button("🚄 Optimise Consists"):
