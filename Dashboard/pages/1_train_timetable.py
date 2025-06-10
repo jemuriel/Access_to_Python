@@ -63,7 +63,7 @@ def build_compatibility_matrix(train_meta_df, feature='WAGON_TYPE'):
     return matrix
 
 # --- Optimiser ---
-def consist_optimiser(long_train_df, train_meta_df=None, buffer_minutes=120, max_iter=50):
+def consist_optimiser(long_train_df, train_meta_df=None, buffer_minutes=720, max_iter=50):
     df = long_train_df.copy()
     df['Datetime'] = pd.to_datetime(df['Datetime'], dayfirst=True)
     df = df.sort_values(by='Datetime')
@@ -209,7 +209,7 @@ st.sidebar.markdown("### Display Settings")
 tra_percent = st.sidebar.slider("Transit Terminal Granularity", 1, 31, 10, step=5)
 # train_buffer = st.sidebar.slider("Train transit buffer", 30, 120, 30, step=30)
 # Temporary slider input (does not auto-update session state)
-buffer_input = st.sidebar.slider("Train transit buffer (6 to 12 hours)", 120, 720,
+buffer_input = st.sidebar.slider("Train transit buffer (6 to 12 hours)", 120, 720, 720,
                                  st.session_state['train_buffer'], step=120)
 
 st.subheader("🚉 Filters")
