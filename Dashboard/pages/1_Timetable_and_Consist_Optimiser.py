@@ -63,89 +63,93 @@ def build_compatibility_matrix(train_meta_df, feature='WAGON_TYPE'):
     return matrix
 
 # --- Optimiser ---
-def consist_optimiser(long_train_df, train_meta_df=None, buffer_minutes=30, max_iter=50):
+from datetime import timedelta
+import pandas as pd
+
+def consist_optimiser(long_train_df, buffer_minutes=720, max_cycle_days=14):
     df = long_train_df.copy()
-    df['Datetime'] = pd.to_datetime(df['Datetime'], dayfirst=True)
-    df = df.sort_values(by='Datetime')
-    df = (df.groupby('Train', group_keys=False).apply(lambda g: pd.concat([g.head(1), g.tail(1)]))
-          .reset_index(drop=True))
+    df["Datetime"] = pd.to_datetime(df["Datetime"], dayfirst=True)
+    df = df.sort_values(by="Datetime")
 
-    df = df.sort_values('Datetime')
-    services = df[df["Activity"] == "DEP"]
-    arr_lookup = df[df["Activity"] == "ARR"].set_index("Train")["Terminal"].to_dict()
-    arr_time_lookup = df[df["Activity"] == "ARR"].set_index("Train")["Datetime"].to_dict()
+    # Get endpoints for each train
+    endpoints = df.groupby("Train", group_keys=False).apply(lambda g: pd.concat([g.head(1), g.tail(1)])).reset_index(drop=True)
+    services = endpoints[endpoints["Activity"] == "DEP"]
+    arrivals = endpoints[endpoints["Activity"] == "ARR"]
 
-    trains = services["Train"].unique()
-    if train_meta_df is not None:
-        compatibility_matrix = build_compatibility_matrix(train_meta_df.set_index("Train"))
-    else:
-        compatibility_matrix = pd.DataFrame(1, index=trains, columns=trains)
+    arr_terminal = arrivals.set_index("Train")["Terminal"].to_dict()
+    arr_time = arrivals.set_index("Train")["Datetime"].to_dict()
+    dep_terminal = services.set_index("Train")["Terminal"].to_dict()
+    dep_time = services.set_index("Train")["Datetime"].to_dict()
 
+    trains = list(services["Train"].unique())
+    used_trains = set()
     consists = []
-    consist_tree = IntervalTree()
-    buffer_time = timedelta(minutes=buffer_minutes)
 
-    for idx, row in services.iterrows():
-        row_time = row["Datetime"]
-        available_consists = [iv.data for iv in sorted(consist_tree[row_time.timestamp()])]
-        candidate = None
-        best_gap = None
-
-        for consist_id in available_consists:
-            if not consists[consist_id]:
+    # Precompute feasible next train links
+    successors = {train: [] for train in trains}
+    for t1 in trains:
+        for t2 in trains:
+            if t1 == t2 or t2 in used_trains:
                 continue
-            last_train = consists[consist_id][-1]
-            if (compatibility_matrix.at[last_train, row["Train"]] == 1 and
-                arr_lookup[last_train] == row["Terminal"] and
-                arr_time_lookup[last_train] + buffer_time <= row_time):
-                gap = (row_time - arr_time_lookup[last_train]).total_seconds()
-                if best_gap is None or gap > best_gap:
-                    candidate = consist_id
-                    best_gap = gap
+            if arr_terminal[t1] == dep_terminal[t2]:
+                if arr_time[t1] + timedelta(minutes=buffer_minutes) <= dep_time[t2]:
+                    successors[t1].append(t2)
 
-        if candidate is not None:
-            consists[candidate].append(row["Train"])
-            last_train = consists[candidate][-2]
-            consist_tree.addi(arr_time_lookup[last_train].timestamp(), row_time.timestamp(), candidate)
-        else:
-            consists.append([row["Train"]])
+    def build_consist_path(start_train):
+        path = [start_train]
+        visited = {start_train}
+        origin = dep_terminal[start_train]
+        cycle_start_time = dep_time[start_train]
 
-    already_merged = set()
-    for _ in range(max_iter):
-        merged = False
-        for i in range(len(consists)):
-            for j in range(len(consists)):
-                if i == j or not consists[i] or not consists[j] or (i, j) in already_merged:
+        def dfs(current_train):
+            for next_train in successors[current_train]:
+                if next_train in visited or next_train in used_trains:
                     continue
-                last_train = consists[i][-1]
-                next_train = consists[j][0]
-                if (compatibility_matrix.at[last_train, next_train] == 1 and
-                    arr_lookup[last_train] == services[services['Train'] == next_train]["Terminal"].values[0] and
-                    arr_time_lookup[last_train] + buffer_time <= services[services['Train'] == next_train]["Datetime"].values[0]):
-                    consists[i].extend(consists[j])
-                    consists[j] = []
-                    already_merged.add((i, j))
-                    merged = True
-                    break
-            if merged:
-                break
-        if not merged:
-            break
 
-    consists = [c for c in consists if c]
+                if arr_time[next_train] - cycle_start_time > timedelta(days=max_cycle_days):
+                    continue
+
+                path.append(next_train)
+                visited.add(next_train)
+
+                # If we return to origin, and the path is at least 2 trains long, stop
+                if arr_terminal[next_train] == origin and len(path) > 1:
+                    return True
+
+                if dfs(next_train):
+                    return True
+
+                # backtrack
+                path.pop()
+                visited.remove(next_train)
+
+            return False
+
+        if dfs(start_train):
+            return path
+        return None
+
+    for train in trains:
+        if train in used_trains:
+            continue
+        path = build_consist_path(train)
+        if path:
+            consists.append(path)
+            used_trains.update(path)
+
+    # Assign consist IDs
+    train_to_consist = {}
     assignments = []
-    for cid, trains in enumerate(consists):
-        for t in trains:
-            dep = services[services['Train'] == t]["Datetime"].values[0]
-            arr = arr_time_lookup.get(t)
-            assignments.append((cid, t, dep, arr))
+    for cid, train_list in enumerate(consists, start=1):
+        for t in train_list:
+            train_to_consist[t] = cid
+            assignments.append((cid, t, dep_time[t], arr_time[t]))
 
-    short_train_df = pd.DataFrame(assignments, columns=["Consist_ID", "Train", "Departure", "Arrival"])
-    consist_dic = {the_train: consist for the_train, consist in short_train_df[["Train", "Consist_ID"]].values}
-    long_train_df['Consist_ID'] = long_train_df['Train'].map(consist_dic)
+    short_df = pd.DataFrame(assignments, columns=["Consist_ID", "Train", "Departure", "Arrival"])
+    long_train_df["Consist_ID"] = long_train_df["Train"].map(train_to_consist)
     long_train_df = long_train_df.sort_values(by=['Train', 'Datetime'])
 
-    return short_train_df, long_train_df
+    return short_df, long_train_df
 
 def plotly_consist_service_distribution(short_train_df):
     service_counts = short_train_df['Consist_ID'].value_counts().sort_index()
@@ -277,7 +281,7 @@ if 'train_buffer' not in st.session_state:
     st.session_state['train_buffer'] = 720  # default
 
 # Temporary slider input (does not auto-update session state)
-buffer_input = st.sidebar.slider("Train transit buffer (6 to 12 hours)", 60, 720,
+buffer_input = st.sidebar.slider("Train transit buffer (2 to 12 hours)", 120, 720,
                                  st.session_state['train_buffer'], step=120)
 
 # Run optimiser only when button is clicked
